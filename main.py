@@ -2,8 +2,8 @@ import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.ensemble import RandomForestClassifier
-import sys
 from sklearn.model_selection import train_test_split
+import sys
 from sklearn.metrics import accuracy_score, classification_report
 from random import randrange
 types = [
@@ -128,7 +128,6 @@ df = pd.DataFrame(data)
 type_mapping = {'fire': 0, 'water': 1, 'grass': 2, 'electric': 3, 'psychic': 4, 'ice': 5, 'dragon': 6, 'dark': 7, 'fairy': 8, 'normal': 9, 'fighting': 10, 'flying': 11, 'poison': 12, 'ground': 13, 'rock': 14, 'bug': 15, 'ghost': 16, 'steel': 17}
 df = df.map(lambda x: type_mapping[x] if x in type_mapping else x)
 i = df.to_csv()
-open('data.csv', 'w').write(i)
 # Separar características e alvo
 X = df.drop('vulnerability', axis=1)
 y = df['vulnerability']
