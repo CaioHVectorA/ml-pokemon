@@ -1,5 +1,11 @@
 import json
-
+def is_float(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+    
 def convert_to_json(input_text: str) -> str:
     splitted = input_text.split("+----------------------------------------+")
     cleaned_splitted = []
@@ -14,7 +20,7 @@ def convert_to_json(input_text: str) -> str:
         if (i % INDEXED_POKEMON_NAME == 0 or i == 0):
             actual_pokemon = cleaned_splitted[i].strip()
             dictionary[actual_pokemon] = {}
-        index_range = i % INDEXED_POKEMON_NAME # 7 check and counter / 0 name / 1 raw count, avg weight, viability ceiling / 2 abilities / 3 items / 4 spreads / 5 moves / 6 teammates
+        index_range = i % INDEXED_POKEMON_NAME # 7 check and counter / 0 name / 1 raw count, avg weight, viability ceiling / 2 abilities / 3 items / 4 spreads / 5 moves / 6 teammates / checks and counters
         if (index_range == 1):
             if (actual_pokemon == "" or actual_pokemon == None): continue
             if (not actual_pokemon in dictionary): dictionary[actual_pokemon] = {}
@@ -33,7 +39,6 @@ def convert_to_json(input_text: str) -> str:
                 abilities[ability_name] = abilities_list[abilities_list.__len__() - 1]
             dictionary[actual_pokemon]["abilities"] = abilities        
             pass
-            # print(cleaned_splitted[i])
         elif (index_range == 3):
             ## items
             separated: list[str] = cleaned_splitted[i].split("    ")
@@ -45,7 +50,6 @@ def convert_to_json(input_text: str) -> str:
                 items[item_name] = items_list[items_list.__len__() - 1]
             dictionary[actual_pokemon]["items"] = items            
             pass
-            # print(cleaned_splitted[i])
         elif (index_range == 4):
             ## spreads
             separated: list[str] = cleaned_splitted[i].split("    ")
@@ -57,13 +61,11 @@ def convert_to_json(input_text: str) -> str:
                 for k in range(0, len(spread_list)):
                     if (spread_list[k] != ""):
                         cleaned.append(spread_list[k])
-                print(cleaned, actual_pokemon)
                 if (cleaned[0] == "Other"):
                     # spreads["other"] = cleaned[1]
                     continue
                 splitted = cleaned[0].split(":")
                 nature = splitted[0].strip()
-                print(splitted)
                 evs = splitted[1].strip()
                 percentage = cleaned[1].strip()
                 if (nature in spreads):
@@ -72,10 +74,8 @@ def convert_to_json(input_text: str) -> str:
                     spreads[nature] = [{"evs": evs, "percentage": percentage}]
                 # first_index = spread_list.index(":")
                 # nature = spread_list[0].strip()
-                # print(spread_list)
             dictionary[actual_pokemon]["spreads"] = spreads
             pass
-            # print(cleaned_splitted[i])
         elif (index_range == 5):
             # same impl as items
             separated: list[str] = cleaned_splitted[i].split("    ")
@@ -100,7 +100,18 @@ def convert_to_json(input_text: str) -> str:
             dictionary[actual_pokemon]["teammates"] = teammates
             ## teammates
             pass
-                
+        elif (index_range == 7):
+            # same impl as ability
+            separated: list[str] = cleaned_splitted[i].split("    ")
+            checks_and_counters = {}
+            for j in range(1, len(separated)):
+                if (separated[j] == ""): continue
+                splitted = separated[j].split(" ")
+                for k in range(0, len(splitted)):
+                    # print(splitted[k], is_float(splitted[k]))
+                    if (is_float(splitted[k])):
+                        checks_and_counters[splitted[k-1].strip()] = splitted[k].strip()
+            dictionary[actual_pokemon]["checks_and_counters"] = checks_and_counters
     return json.dumps(dictionary)
 
 
